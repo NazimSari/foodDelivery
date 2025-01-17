@@ -33,8 +33,15 @@ export class UsersService {
   }
 
   //get all users
-  async getAllUsers() {
-    const users = [];
+  async getUsers() {
+    const users = [
+      {
+        id: '123',
+        name: 'John Doe',
+        email: 'nazim@gmail.com',
+        password: '12345',
+      },
+    ];
     return users;
   }
 }
