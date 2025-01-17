@@ -45,14 +45,18 @@ export class UsersService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await this.prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        phone_number,
-      },
-    });
+    const user = {
+      name,
+      email,
+      password: hashedPassword,
+      phone_number,
+    };
+
+    const activationToken = await this.createActivationToken(user);
+    const activationCode = activationToken.activationCode;
+
+    console.log(activationCode);
+
     return { user, response };
   }
 
