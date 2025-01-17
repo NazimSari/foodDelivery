@@ -1,8 +1,9 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import { RegisterResponse } from './types/user.types';
 import { RegisterDto } from './dto/user.dto';
 import { BadRequestException } from '@nestjs/common';
+import { User } from './entities/user.entity';
 
 @Resolver('User')
 export class UsersResolver {
@@ -16,7 +17,7 @@ export class UsersResolver {
       throw new BadRequestException('Name, email and password are required');
     }
 
-    const user = await this.usersService.register(registerDto);
+    const user = await this.userService.register(registerDto);
     return { user };
   }
 
