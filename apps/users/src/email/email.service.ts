@@ -6,7 +6,7 @@ type mailOptions = {
   email: string;
   name: string;
   template: string;
-  activationCode: number;
+  activationCode: string;
 };
 @Injectable()
 export class EmailService {
