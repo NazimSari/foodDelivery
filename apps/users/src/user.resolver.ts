@@ -20,6 +20,7 @@ export class UsersResolver {
     }
 
     const user = await this.userService.register(registerDto, context.res);
+    console.log('Created User:', user);
     return { user };
   }
 
