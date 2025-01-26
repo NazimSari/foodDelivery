@@ -3,7 +3,7 @@ import { JwtService, JwtVerifyOptions } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { ActivationDto, LoginDto, RegisterDto } from './dto/user.dto';
 import { PrismaService } from '../../../prisma/Prisma.Service';
-import { response, Response } from 'express';
+import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { EmailService } from './email/email.service';
 
@@ -65,7 +65,7 @@ export class UsersService {
       activationCode,
     });
 
-    return { user, response };
+    return { activation_token: activationToken.token, response };
   }
 
   //create activation token
