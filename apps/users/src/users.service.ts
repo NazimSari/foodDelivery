@@ -133,8 +133,8 @@ export class UsersService {
     } else {
       return {
         user: null,
-        accessToken: null,
-        refreshToken: null,
+        accesstoken: null,
+        refreshtoken: null,
         error: {
           message: 'Invalid email or password',
         },
@@ -148,6 +148,15 @@ export class UsersService {
     hashedPassword: string,
   ): Promise<boolean> {
     return await bcrypt.compare(password, hashedPassword);
+  }
+
+  //get logged in user
+  async getLoggedInUser(req: any) {
+    const user = req.user;
+    const accessToken = req.accesstoken;
+    const refreshToken = req.refreshtoken;
+
+    return { user, accessToken, refreshToken };
   }
 
   //get all users
