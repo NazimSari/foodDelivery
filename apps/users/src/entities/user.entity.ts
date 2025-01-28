@@ -37,6 +37,12 @@ export class User {
   role: string;
 
   @Field()
+  phone_number: number;
+
+  @Field({ nullable: true })
+  address: string;
+
+  @Field()
   createdAt: Date;
 
   @Field()
