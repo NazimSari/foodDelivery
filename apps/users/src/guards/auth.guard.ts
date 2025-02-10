@@ -28,15 +28,21 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Please login to access this resource');
     }
     if (accessToken) {
-      const decoded = this.jwtService.verify(accessToken, {
-        secret: this.config.get<string>('ACESS_TOKEN_SECRET'),
-      });
+      const decoded = this.jwtService.decode(accessToken);
 
-      if (!decoded) {
-        throw new UnauthorizedException('Invalid access token');
+      const expirationTime = decoded?.exp;
+
+      if (expirationTime * 1000 < Date.now()) {
+        await this.updatedAccessToken(req);
       }
+      // Kullanıcıyı yeniden al ve req.user olarak set et
+      const decodedAfterRefresh = this.jwtService.decode(accessToken) as any;
 
-      await this.updatedAccessToken(req);
+      if (decodedAfterRefresh?.id) {
+        req.user = await this.prisma.user.findUnique({
+          where: { id: decodedAfterRefresh.id },
+        });
+      }
     }
 
     return true;
@@ -44,12 +50,12 @@ export class AuthGuard implements CanActivate {
   private async updatedAccessToken(req: any): Promise<void> {
     try {
       const refreshTokenData = req.headers.refreshtoken as string;
-      const decoded = this.jwtService.verify(refreshTokenData, {
-        secret: this.config.get<string>('REFRESH_TOKEN_SECRET'),
-      });
+      const decoded = this.jwtService.decode(refreshTokenData);
 
-      if (!decoded) {
-        throw new UnauthorizedException('Invalid refresh token');
+      const expirationTime = decoded.exp * 1000;
+
+      if (expirationTime < Date.now()) {
+        throw new UnauthorizedException('Please login to access this resource');
       }
 
       const user = await this.prisma.user.findUnique({
@@ -62,7 +68,7 @@ export class AuthGuard implements CanActivate {
         { id: user.id },
         {
           secret: this.config.get<string>('ACESS_TOKEN_SECRET'),
-          expiresIn: '15m',
+          expiresIn: '5m',
         },
       );
 
@@ -78,7 +84,7 @@ export class AuthGuard implements CanActivate {
       req.refreshtoken = refreshToken;
       req.user = user;
     } catch (error) {
-      console.log(error);
+      console.log('Error in updatedAccessToken:', error);
     }
   }
 }
