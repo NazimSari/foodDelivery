@@ -204,7 +204,7 @@ export class UsersService {
     const { password, activationToken } = resetPasswordDto;
     const decoded = await this.jwtService.decode(activationToken);
 
-    if (!decoded) {
+    if (!decoded || decoded?.exp * 1000 < Date.now()) {
       throw new BadRequestException('Invalid token!');
     }
 
